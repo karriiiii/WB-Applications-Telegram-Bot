@@ -57,8 +57,8 @@
 
 1.  **Клонируйте репозиторий:**
     ```bash
-    git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
-    cd <НАЗВАНИЕ_ПАПКИ>
+    git clone https://github.com/karriiiii/WB-Applications-Telegram-Bot
+    cd WB-Applications-Telegram-Bot
     ```
 
 2.  **Создайте и активируйте виртуальное окружение:**
