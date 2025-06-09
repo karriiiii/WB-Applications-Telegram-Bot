@@ -87,7 +87,7 @@ async def show_applications_page(target: types.Message | types.CallbackQuery, pa
         all_keyboard_rows = [] 
 
         for app_data in apps_on_page:
-            (app_id, user_id, username, full_name, _, _, _, phone, status, created_at, updated_at) = app_data[:11]
+            (app_id, user_id, username, full_name, _, _, _, _, phone, status, created_at, updated_at) = app_data[:12]
             date_to_show_str = updated_at if status != 'new' else created_at
             formatted_date = datetime.strptime(date_to_show_str, '%Y-%m-%d %H:%M:%S').strftime('%d.%m.%y %H:%M')
 
@@ -315,6 +315,7 @@ async def process_admin_message_to_user(message: types.Message, state: FSMContex
     target_user_id = admin_data.get("current_app_user_id")
     target_app_id = admin_data.get("current_app_id")
     admin_id = message.from_user.id
+    page_to_return = admin_data.get("current_app_page_from_list", 1)
 
     if not all([target_user_id, target_app_id]):
         logger.error(f"Критическая ошибка FSM: не найдены данные для отправки сообщения от админа {admin_id}.")
@@ -332,7 +333,7 @@ async def process_admin_message_to_user(message: types.Message, state: FSMContex
         logger.error(f"Ошибка при отправке сообщения от {admin_id} к {target_user_id}: {e}", exc_info=True)
 
     # После отправки возвращаемся в режим детального просмотра
-    await cq_admin_app_start_review(message, state)
+    await show_applications_page(message, page=page_to_return, is_edit=True)
 
 
 @admin_router.message(Command("cancel_admin_action"), AdminActions.awaiting_message_to_user)
