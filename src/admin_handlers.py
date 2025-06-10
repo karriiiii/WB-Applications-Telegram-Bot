@@ -204,7 +204,7 @@ async def cq_admin_review_write_start(callback_query: types.CallbackQuery, state
 
 
 @admin_router.callback_query(AdminActions.reviewing_application, F.data.startswith("admin_review_complete_"))
-async def cq_admin_review_complete(callback_query: types.CallbackQuery, state: FSMContext, bot: Bot):
+async def cq_admin_review_complete(callback_query: types.CallbackQuery, state: FSMContext, bot: Bot, ban_manager: BanManager):
     """Обрабатывает утверждение заявки."""
     admin_state_data = await state.get_data()
     app_id = admin_state_data.get("current_app_id")
@@ -225,6 +225,8 @@ async def cq_admin_review_complete(callback_query: types.CallbackQuery, state: F
         logger.info(f"Пользователю {user_id_to_notify} отправлено уведомление о принятии заявки #{app_id}.")
     except Exception as e:
         logger.warning(f"Не удалось уведомить пользователя {user_id_to_notify} о принятии заявки #{app_id}: {e}")
+
+    await ban_manager.add_banned_user(user_id_to_notify, 'completed application')
 
     await callback_query.answer(f"Заявка #{app_id} отмечена как 'завершенная'.", show_alert=True)
     await state.clear()
